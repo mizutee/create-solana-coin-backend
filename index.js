@@ -14,8 +14,8 @@ const PORT = process.env.PORT || 8080;
 
 app.use(
     cors({
-        origin: ["http://localhost:3000"],
-        methods: ["GET", "POST", "PUT", "DELETE"],
+        origin: ["https://createsolanacoin.com", "https://www.createsolanacoin.com", "http://localhost:3000"],
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         credentials: true,
     })
 );
@@ -38,8 +38,7 @@ app.post("/pay-fee", async (req, res) => {
 
 app.post("/api/v1/create-token", async (req, res) => {
     try {
-        let { name, symbol, description, supply, decimals, image, revokeFreezeAuthority, revokeMintAuthority, publicKey, code } = req.body
-        await checkExistingTransaction(code)
+        let { name, symbol, description, supply, decimals, image, revokeFreezeAuthority, revokeMintAuthority, publicKey } = req.body
         const imageURI = await uploadToPinata(image);
         image = process.env.PINATA_FETCH_URL + imageURI
 
@@ -56,9 +55,14 @@ app.post("/api/v1/create-token", async (req, res) => {
         }
         const uploadMetadata = await uploadPinata({ name, symbol, image, description });
         payload.pinataHash = uploadMetadata;
-
+        const insertNew = await InsertTransaction(publicKey)
         const result = await CreateAndMintToken(payload)
-        res.status(200).json({ address: result })
+        await checkExistingTransaction(insertNew, result.mintKeypair.toString())
+        const serializedTransaction = result.serializedTransaction.toString("base64");
+        res.status(200).json({
+            serializedTransaction,
+            mintKeypair: result.mintKeypair
+        });
     } catch (error) {
         console.log(error, '<<< mautau error nya apa :(')
         res.status(500).json({ error: "Internal Server Error" })

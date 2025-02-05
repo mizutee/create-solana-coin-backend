@@ -17,12 +17,12 @@ export const InsertTransaction = async (publicKey) => {
     }
 }
 
-export const checkExistingTransaction = async (code) => {
+export const checkExistingTransaction = async (code, CA) => {
     try {
         const existCode = await db.collection('Transaction').findOne({
             _id: new ObjectId(code)
         });
-        console.log(existCode, '<< ini exist??')
+
         if (!existCode || existCode.status !== 'active') {
             throw {
                 error: "Invalid Code",
@@ -32,13 +32,13 @@ export const checkExistingTransaction = async (code) => {
 
         const updateTrans = await db.collection('Transaction').findOneAndUpdate(
             {_id: existCode._id},
-            {$set: {status: 'claimed', updatedAt: new Date()}}
+            {$set: {status: 'claimed', updatedAt: new Date(), ContractAddress: CA}}
         );
 
         if (!updateTrans) {
             console.log(`FAILED UPDATE TRANSACTION STATUS`)
         }
-        
+
         return true
     } catch (error) {
         throw error;

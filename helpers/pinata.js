@@ -17,7 +17,6 @@ const uploadPinata = async (metadata) => {
         const metadataBlob = new Blob([JSON.stringify(metadataJson)], { type: 'application/json' });
         const file = new File([metadataBlob], generateRandomWord(10) + '.json', { type: 'application/json' });
         const upload = await pinata.upload.file(file);
-        console.log('ke upload gak?', upload)
         return upload?.IpfsHash;
     } catch (error) {
         console.log(error)
