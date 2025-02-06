@@ -1,11 +1,12 @@
 import { ObjectId } from "mongodb"
 import { db } from "../helpers/mongodb.js"
 
-export const InsertTransaction = async (publicKey) => {
+export const InsertTransaction = async (publicKey, network) => {
     try {
         const insertTransactionToDB = await db.collection('Transaction').insertOne({
             user: publicKey,
             status: 'active',
+            network: network,
             createdAt: new Date(),
             updatedAt: new Date()
         })

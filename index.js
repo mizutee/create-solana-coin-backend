@@ -22,7 +22,7 @@ app.use(
 
 app.use(bodyParser.json());
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true, limit: "5mb" }));
 
 app.post("/pay-fee", async (req, res) => {
     try {
@@ -38,7 +38,7 @@ app.post("/pay-fee", async (req, res) => {
 
 app.post("/api/v1/create-token", async (req, res) => {
     try {
-        let { name, symbol, description, supply, decimals, image, revokeFreezeAuthority, revokeMintAuthority, publicKey } = req.body
+        let { name, symbol, description, supply, decimals, image, revokeFreezeAuthority, revokeMintAuthority, publicKey, network } = req.body        
         const imageURI = await uploadToPinata(image);
         image = process.env.PINATA_FETCH_URL + imageURI
 
@@ -55,7 +55,7 @@ app.post("/api/v1/create-token", async (req, res) => {
         }
         const uploadMetadata = await uploadPinata({ name, symbol, image, description });
         payload.pinataHash = uploadMetadata;
-        const insertNew = await InsertTransaction(publicKey)
+        const insertNew = await InsertTransaction(publicKey, network)
         const result = await CreateAndMintToken(payload)
         await checkExistingTransaction(insertNew, result.mintKeypair.toString())
         const serializedTransaction = result.serializedTransaction.toString("base64");

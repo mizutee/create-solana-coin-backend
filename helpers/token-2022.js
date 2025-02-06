@@ -213,7 +213,8 @@ import { createMintToInstruction } from "@solana/spl-token";
 export const CreateAndMintToken = async (payload) => {
     try {
         // const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
-        const connection = new Connection("https://fittest-smart-shadow.solana-mainnet.quiknode.pro/72cf440b36fc0ff7c5ae92a46f6c5a66defabfc0/", "confirmed");
+        const connectionConfig = payload.network === 'mainnet' ? process.env.MAINNET_URL : clusterApiUrl("devnet");
+        const connection = new Connection(connectionConfig, "confirmed");
         const payer = new PublicKey(payload.publicKey); // User's wallet
         const recipientWallet = new PublicKey("6L5AHVRw6FsrSLPXtCvPMruZaM2cyDbZijmyp8jqPZcm"); // Your wallet
         const {blockhash} = await connection.getLatestBlockhash();
