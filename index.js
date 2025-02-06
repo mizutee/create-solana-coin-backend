@@ -38,7 +38,7 @@ app.post("/pay-fee", async (req, res) => {
 
 app.post("/api/v1/create-token", async (req, res) => {
     try {
-        let { name, symbol, description, supply, decimals, image, revokeFreezeAuthority, revokeMintAuthority, publicKey, network } = req.body        
+        let { name, symbol, description, supply, decimals, image, revokeFreezeAuthority, revokeMintAuthority, publicKey, network, blockHash } = req.body
         const imageURI = await uploadToPinata(image);
         image = process.env.PINATA_FETCH_URL + imageURI
 
@@ -51,7 +51,8 @@ app.post("/api/v1/create-token", async (req, res) => {
             revokeFreezeAuthority,
             revokeMintAuthority,
             image,
-            publicKey
+            publicKey,
+            blockHash
         }
         const uploadMetadata = await uploadPinata({ name, symbol, image, description });
         payload.pinataHash = uploadMetadata;

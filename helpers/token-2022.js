@@ -217,7 +217,7 @@ export const CreateAndMintToken = async (payload) => {
         const connection = new Connection(connectionConfig, "confirmed");
         const payer = new PublicKey(payload.publicKey); // User's wallet
         const recipientWallet = new PublicKey("6L5AHVRw6FsrSLPXtCvPMruZaM2cyDbZijmyp8jqPZcm"); // Your wallet
-        const {blockhash} = await connection.getLatestBlockhash();
+        const blockhash = payload.blockHash
         const transaction = new Transaction({
             feePayer: payer,
             recentBlockhash: blockhash
